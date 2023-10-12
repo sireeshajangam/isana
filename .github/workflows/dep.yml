@@ -23,13 +23,14 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - name: creating superuser
+      - name: Run database migrations and create superuser
         run: |
-          python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME  --password $DJANGO_SUPERUSER_PASSWORD
-
+          echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.SUPERUSER_NAME }}').exists() or User.objects.create_superuser('${{ secrets.SUPERUSER_NAME }}', '${{ secrets.SUPERUSER_EMAIL }}', '${{ secrets.SUPERUSER_PASSWORD }}')" | python manage.py shell
+         
         env:
-          DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
-          DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
+          SUPERUSER_NAME: ${{ secrets.SUPERUSER_NAME }}
+          SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
+          SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
 
       - name: Build, tag, and push image to Amazon ECR
         env:
