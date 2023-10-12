@@ -14,9 +14,10 @@ COPY . /app/
 # Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Run migrations
+# Run migrations and collect static files
 RUN python manage.py makemigrations
 RUN python manage.py migrate
+RUN python manage.py collectstatic --noinput
 
 # Expose the port the app runs on (if applicable)
 EXPOSE 8000
