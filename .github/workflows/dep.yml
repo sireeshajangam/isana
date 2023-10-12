@@ -23,12 +23,20 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+      - name: creating superuser
+        run: |
+          python manage.py createsuperuser --noinput --username $DJANGO_SUPERUSER_USERNAME  --password $DJANGO_SUPERUSER_PASSWORD
+
+        env:
+          DJANGO_SUPERUSER_USERNAME: ${{ secrets.DJANGO_SUPERUSER_USERNAME }}
+          DJANGO_SUPERUSER_PASSWORD: ${{ secrets.DJANGO_SUPERUSER_PASSWORD }}
 
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: python-repo	# Replace with your ECR repository name
-          IMAGE_TAG:  sample-image # You can customize the image tag as needed
+          IMAGE_TAG:  sample-image
+           # You can customize the image tag as needed
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
