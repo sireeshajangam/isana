@@ -12,6 +12,40 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+import os
+import json
+import boto3
+
+
+# Initialize a session using AWS credentials and region
+session = boto3.Session(
+    aws_access_key_id='AKIAYKJZ3DM2OMY4RQ6R',
+    aws_secret_access_key='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',
+    region_name='us-east-1'
+)
+
+# Create a Secrets Manager client
+secrets_manager_client = session.client(service_name='secretsmanager', region_name='us-east-1')
+
+# Retrieve the secret values from AWS Secrets Manager
+secret_name = 'DBCredentials'
+get_secret_value_response = secrets_manager_client.get_secret_value(SecretId=secret_name)
+
+# Parse the secret JSON string to obtain key-value pairs
+secret_values = json.loads(get_secret_value_response['SecretString'])
+
+# Django database configuration using retrieved secret values
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'HOST': secret_values['DJANGO_DB_HOST'],
+        'PORT': secret_values['DJANGO_DB_PORT'],
+        'NAME': secret_values['DJANGO_DB_NAME'],
+        'USER': secret_values['DJANGO_DB_USER'],
+        'PASSWORD': secret_values['DJANGO_DB_PASSWORD'],
+    }
+}
+print(DATABASES)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

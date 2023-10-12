@@ -12,9 +12,13 @@ WORKDIR /app
 COPY . /app/
 
 # Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirments.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the port the app runs on
+# Run migrations
+RUN python manage.py makemigrations
+RUN python manage.py migrate
+
+# Expose the port the app runs on (if applicable)
 EXPOSE 8000
 
 # Start the application
