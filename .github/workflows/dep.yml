@@ -60,7 +60,7 @@ jobs:
             --application-name satya \
             --environment-name Satya-env \
             --version-label "v${GITHUB_RUN_NUMBER}" \
-            --source-bundle S3Bucket=$GITHUB_REPOSITORY,S3Key=Dockerrun.aws.json
+            --source-bundle S3Bucket=s3://siridjango/dockerrun.json,S3Key=Dockerrun.aws.json
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
