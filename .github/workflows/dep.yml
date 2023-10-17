@@ -1,4 +1,4 @@
-name: Build and Push to ECR
+name: Build, Push to ECR, and Deploy to Elastic Beanstalk
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build_and_push:
+  build_push_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,13 +16,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8  # Choose your desired Python version
-          
+          python-version: 3.8
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt  # Assuming your requirements are in requirements.txt
-          
+          pip install -r requirements.txt
+
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -38,7 +38,6 @@ jobs:
         run: |
           python manage.py migrate
           echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.SUPERUSER_NAME }}').exists() or User.objects.create_superuser('${{ secrets.SUPERUSER_NAME }}', '${{ secrets.SUPERUSER_EMAIL }}', '${{ secrets.SUPERUSER_PASSWORD }}')" | python manage.py shell
-         
         env:
           SUPERUSER_NAME: ${{ secrets.SUPERUSER_NAME }}
           SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
@@ -47,9 +46,21 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: python-repo  # Replace with your ECR repository name
+          ECR_REPOSITORY: python-repo
           IMAGE_TAG: sample-image
-           # You can customize the image tag as needed
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Download Dockerrun.aws.json from S3
+        run: aws s3 cp s3://siridjango/dockerrun.json .
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk update-environment \
+            --application-name satya \
+            --environment-name Satya-env \
+            --version-label "v${GITHUB_RUN_NUMBER}" \
+            --source-bundle S3Bucket=$GITHUB_REPOSITORY,S3Key=Dockerrun.aws.json
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
