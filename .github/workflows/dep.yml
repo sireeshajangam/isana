@@ -1,4 +1,4 @@
-name: Build, Push to ECR, and Deploy to Elastic Beanstalkss
+name: Build, Push to ECR, and Deploy to Elastic Beanstalks
 
 on:
   push:
