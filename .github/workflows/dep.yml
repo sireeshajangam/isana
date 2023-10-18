@@ -1,5 +1,4 @@
-name: Build, Push to ECR, and Deploy to Elastic Beanstalks
-
+name: Build, Push to ECR, and Deploy to Elastic Beanstalkss
 on:
   push:
     branches:
