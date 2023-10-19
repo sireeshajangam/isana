@@ -35,7 +35,6 @@ jobs:
 
       - name: Run database migrations and create superuser
         run: |
-          python manage.py delete_superusers
          
           echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.SUPERUSER_NAME }}').exists() or User.objects.create_superuser('${{ secrets.SUPERUSER_NAME }}', '${{ secrets.SUPERUSER_EMAIL }}', '${{ secrets.SUPERUSER_PASSWORD }}')" | python manage.py shell
         env:
