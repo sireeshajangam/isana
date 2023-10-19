@@ -35,12 +35,13 @@ jobs:
 
       - name: Run database migrations and create superuser
         run: |
-          python manage.py migrate
-          echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.SUPERUSER_NAME }}').exists() or User.objects.create_superuser('${{ secrets.SUPERUSER_NAME }}', '${{ secrets.SUPERUSER_EMAIL }}', '${{ secrets.SUPERUSER_PASSWORD }}')" | python manage.py shell
-        env:
-          SUPERUSER_NAME: ${{ secrets.SUPERUSER_NAME }}
-          SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
-          SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
+          python manage.py delete_superusers
+          echo"successfull deletion"
+         # echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(username='${{ secrets.SUPERUSER_NAME }}').exists() or User.objects.create_superuser('${{ secrets.SUPERUSER_NAME }}', '${{ secrets.SUPERUSER_EMAIL }}', '${{ secrets.SUPERUSER_PASSWORD }}')" | python manage.py shell
+        #env:
+         # SUPERUSER_NAME: ${{ secrets.SUPERUSER_NAME }}
+          #SUPERUSER_EMAIL: ${{ secrets.SUPERUSER_EMAIL }}
+          #SUPERUSER_PASSWORD: ${{ secrets.SUPERUSER_PASSWORD }}
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
