@@ -7,5 +7,5 @@ set -e
 # Pull the Docker image from ECR
 /usr/bin/docker pull 571888835380.dkr.ecr.us-east-1.amazonaws.com/python-repo:latest
 
-# Run the Docker image as a container
+# Run the Docker image as a containers
 /usr/bin/docker run -d -p 8000:8000 571888835380.dkr.ecr.us-east-1.amazonaws.com/python-repo:latest
