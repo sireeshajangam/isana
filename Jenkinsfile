@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         AWS_DEFAULT_REGION = us-east-1
-        ECR_REGISTRY = 862547479026.dkr.ecr.us-east-1.amazonaws.com/python:latest
+        ECR_REGISTRY = "862547479026.dkr.ecr.us-east-1.amazonaws.com/python:latest"
         IMAGE_NAME = isana
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_KEY_ID')
